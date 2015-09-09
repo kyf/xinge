@@ -13,7 +13,11 @@ var (
 
 func TestStaticPushSingleDevice(t *testing.T) {
 	res := PushSingleDevice(accessId, secretKey, "老友提醒", "今天晚上没事的话聚聚呗", 86400)
-	fmt.Println(res)
+	if res.Code != 0 {
+		t.Errorf("send failure, error is %s", res.Msg)
+	}else{
+		fmt.Println("send success")
+	}
 }
 
 func TestPushSingleDevice(t *testing.T) {
@@ -34,5 +38,9 @@ func TestPushSingleDevice(t *testing.T) {
 	message.SetCustom(custom)
 	message.AddAcceptTime(TimeInterval{0, 0, 23, 59})
 	res := client.PushSingleDevice(deviceToken, message)
-	fmt.Println(res)
+	if res.Code != 0 {
+		t.Errorf("send failure, error is %s", res.Msg)
+	}else{
+		fmt.Println("send success")
+	}
 }
