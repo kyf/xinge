@@ -1,5 +1,10 @@
 package xinge
 
+import (
+	"encoding/json"
+	"strings"
+)
+
 const (
 	ACTION_TYPE_ACTIVITY int = 1
 	ACTION_TYPE_URL      int = 2
@@ -81,6 +86,10 @@ type Response struct {
 	Msg  string `json:"err_msg"`
 }
 
+func newResponse() Response {
+	return Response{-1, "message not valid"}
+}
+
 type TagTokenPair struct {
 	Tag   string `json:"tag"`
 	Token string `json:"token"`
@@ -90,8 +99,8 @@ func NewMessage() *Message {
 	return &Message{
 		AcceptTime: make([]TimeInterval, 0),
 		MultiPkg:   0,
-		Style:      &Style{BuilderId: 0},
-		Action:     &ClickAction{},
+		Style:      Style{BuilderId: 0},
+		Action:     ClickAction{},
 	}
 }
 
@@ -103,7 +112,15 @@ func (m *Message) SetStyle(style Style) {
 	m.Style = style
 }
 
-func (m *Message) Json() ([]byte, error) {
+func (m *Message) SetCustom(custom map[string]string) {
+	m.Custom = custom
+}
+
+func (m *Message) AddAcceptTime(acceptTime TimeInterval) {
+	m.AcceptTime = append(m.AcceptTime, acceptTime)
+}
+
+func (m *Message) Json() []byte {
 	result := make(map[string]interface{})
 
 	result["title"] = m.Title
@@ -117,8 +134,8 @@ func (m *Message) Json() ([]byte, error) {
 		result["clearable"] = m.Style.Clearable
 		result["n_id"] = m.Style.NId
 
-		if !strings.EqualFold(m.Style.RingRow, "") {
-			result["ring_raw"] = m.Style.RingRow
+		if !strings.EqualFold(m.Style.RingRaw, "") {
+			result["ring_raw"] = m.Style.RingRaw
 		}
 
 		result["lights"] = m.Style.Lights
@@ -142,16 +159,40 @@ func (m *Message) Json() ([]byte, error) {
 
 	ret, err := json.Marshal(result)
 	if err != nil {
-		return nil, err
+		return nil
 	}
 
-	return ret, nil
+	return ret
 }
 
-func (m *Message) JsonAcceptTime() []byte {
-
+func (m *Message) JsonAcceptTime() []map[string]map[string]int {
+	result := make([]map[string]map[string]int, 0)
+	for _, t := range m.AcceptTime {
+		var tmp map[string]map[string]int = map[string]map[string]int{
+			"start": {"hour": t.StartHour, "min": t.StartMin},
+			"end":   {"hour": t.EndHour, "min": t.EndHour},
+		}
+		result = append(result, tmp)
+	}
+	return result
 }
 
-func (m *Message) JsonAction() []byte {
+func (m *Message) JsonAction() map[string]interface{} {
+	result := make(map[string]interface{})
+	result["action_type"] = m.Action.ActionType
+	result["browser"] = map[string]interface{}{"url": m.Action.Url, "confirm": m.Action.ConfirmOnUrl}
+	result["activity"] = m.Action.Activity
+	result["intent"] = m.Action.Intent
 
+	aty_attr := make(map[string]int)
+	if m.Action.AtyAttrIntentFlag != 0 {
+		aty_attr["if"] = m.Action.AtyAttrIntentFlag
+	}
+
+	if m.Action.AtyAttrPendingIntentFlag != 0 {
+		aty_attr["pf"] = m.Action.AtyAttrPendingIntentFlag
+	}
+
+	result["aty_attr"] = aty_attr
+	return result
 }
