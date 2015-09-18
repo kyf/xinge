@@ -18,7 +18,7 @@ type Client struct {
 	secretKey string
 }
 
-func PushSingleDevice(accessId int, secretKey string, title, content string, expire int) Response {
+func PushSingleDevice(accessId int, secretKey, deviceToken, title, content string, expire int) Response {
 	client := NewClient(accessId, secretKey)
 	message := NewMessage()
 	message.Type = MESSAGE_TYPE_NOTIFICATION

@@ -6,13 +6,15 @@ import (
 )
 
 var (
-	accessId    int    = 2100146207
-	secretKey   string = "e10a7515e6b95a64056ae0a9a7c17dba"
-	deviceToken string = "32ae0e40045dd057441fb4360aa7ab7d25688b4a"
+	accessId    int    = 2100146994
+	secretKey   string = "d7e0de4cc42f6a33b84d0beaeabee1fe"
+	//deviceToken string = "32ae0e40045dd057441fb4360aa7ab7d25688b4a"
+	//deviceToken string = "6621332a452a2126479e99854f69dc25fc0628ca"
+	deviceToken string = "e5e665ed947c8ba14a8ea78fa5b9b7dbc5ffed2e"
 )
 
 func TestStaticPushSingleDevice(t *testing.T) {
-	res := PushSingleDevice(accessId, secretKey, "老友提醒", "今天晚上没事的话聚聚呗", 86400)
+	res := PushSingleDevice(accessId, secretKey, deviceToken, "老友提醒", "今天晚上没事的话聚聚呗", 86400)
 	if res.Code != 0 {
 		t.Errorf("send failure, error is %s", res.Msg)
 	}else{
@@ -20,6 +22,7 @@ func TestStaticPushSingleDevice(t *testing.T) {
 	}
 }
 
+/*
 func TestPushSingleDevice(t *testing.T) {
 	client := NewClient(accessId, secretKey)
 	message := NewMessage()
@@ -44,3 +47,4 @@ func TestPushSingleDevice(t *testing.T) {
 		fmt.Println("send success")
 	}
 }
+*/
