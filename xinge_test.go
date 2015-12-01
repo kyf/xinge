@@ -7,7 +7,7 @@ import (
 
 var (
 	accessId    int    = 2100146994
-	secretKey   string = "d7e0de4cc42f6a33b84d0beaeabee1fe"
+	secretKey   string = "secretKey"
 	//deviceToken string = "32ae0e40045dd057441fb4360aa7ab7d25688b4a"
 	//deviceToken string = "6621332a452a2126479e99854f69dc25fc0628ca"
 	deviceToken string = "e5e665ed947c8ba14a8ea78fa5b9b7dbc5ffed2e"
