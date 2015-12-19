@@ -13,6 +13,7 @@ var (
 	deviceToken string = "7173f5b47ff076a84c17937e9655bcdaef904b80"
 )
 
+/*
 func TestStaticPushSingleDevice(t *testing.T) {
 	res := PushSingleDevice(accessId, secretKey, deviceToken, "老友提醒", "今天晚上没事的话聚聚呗", 86400)
 	if res.Code != 0 {
@@ -22,7 +23,7 @@ func TestStaticPushSingleDevice(t *testing.T) {
 	}
 }
 
-/*
+*/
 func TestStaticPushAllDevices(t *testing.T) {
 	custom := map[string]string{"loadurl": "http://www.6renyou.com/"}
 	res := PushAllDevices(accessId, secretKey, "6人游提醒您", "过年了，让我们大家一起Happy吧！", custom, 86400)
@@ -32,4 +33,3 @@ func TestStaticPushAllDevices(t *testing.T) {
 		fmt.Println("send success")
 	}
 }
-*/
