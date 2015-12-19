@@ -28,10 +28,8 @@ func PushSingleDevice(accessId int, secretKey, deviceToken, title, content strin
 	style := Style{BuilderId: 0, Ring: 1, Vibrate: 1, Clearable: 0, NId: 0}
 	action := ClickAction{}
 	action.ActionType = ACTION_TYPE_ACTIVITY
-	custom := map[string]string{"key1": "value1", "key2": "value2"}
 	message.SetStyle(style)
 	message.SetAction(action)
-	message.SetCustom(custom)
 	message.AddAcceptTime(TimeInterval{0, 0, 23, 59})
 	res := client.PushSingleDevice(deviceToken, message)
 	return res
@@ -66,9 +64,40 @@ func (c *Client) PushAccountList(deviceType int, accountList []string, message M
 	return res
 }
 
-func (c *Client) PushAllDevices(deviceType int, message Message) Response {
-	var res Response
+func PushAllDevices(accessId int, secretKey, title, content string, custom map[string]string, expire int) Response {
+	client := NewClient(accessId, secretKey)
+	message := NewMessage()
+	message.Type = MESSAGE_TYPE_NOTIFICATION
+	message.Title = title
+	message.Content = content
+	message.ExpireTime = expire
+	style := Style{BuilderId: 0, Ring: 1, Vibrate: 1, Clearable: 0, NId: 0}
+	action := ClickAction{}
+	action.ActionType = ACTION_TYPE_ACTIVITY
+	message.SetStyle(style)
+	message.SetAction(action)
+	if custom != nil {
+		message.SetCustom(custom)
+	}
+	message.AddAcceptTime(TimeInterval{0, 0, 23, 59})
+	res := client.PushAllDevices(message)
+	return res
 
+}
+
+func (c *Client) PushAllDevices(message *Message) Response {
+	params := make(map[string]interface{})
+	params["access_id"] = c.accessId
+	params["expire_time"] = message.ExpireTime
+	params["send_time"] = message.SendTime
+	params["multi_pkg"] = message.MultiPkg
+	params["message_type"] = message.Type
+	params["message"] = string(message.Json())
+	params["timestamp"] = time.Now().Unix()
+	params["environment"] = 0
+	params["sign"] = c.generateSign(METHOD_POST, RESTAPI_PUSHALLDEVICE, c.secretKey, params)
+
+	res := c.send(RESTAPI_PUSHALLDEVICE, params)
 	return res
 }
 
