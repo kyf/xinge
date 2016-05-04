@@ -18,7 +18,7 @@ type Client struct {
 	secretKey string
 }
 
-func PushSingleDevice(accessId int, secretKey, deviceToken, title, content string, expire int) Response {
+func PushSingleDevice(accessId int, secretKey, deviceToken, title, content string, custom map[string]string, expire int) Response {
 	client := NewClient(accessId, secretKey)
 	message := NewMessage()
 	message.Type = MESSAGE_TYPE_NOTIFICATION
@@ -30,6 +30,9 @@ func PushSingleDevice(accessId int, secretKey, deviceToken, title, content strin
 	action.ActionType = ACTION_TYPE_ACTIVITY
 	message.SetStyle(style)
 	message.SetAction(action)
+	if custom != nil {
+		message.SetCustom(custom)
+	}
 	message.AddAcceptTime(TimeInterval{0, 0, 23, 59})
 	res := client.PushSingleDevice(deviceToken, message)
 	return res
