@@ -67,6 +67,47 @@ func (c *Client) PushAccountList(deviceType int, accountList []string, message M
 	return res
 }
 
+func PushGroup(devices []string, accessId int, secretKey, title, content string, custom map[string]string, expire int) Response {
+	client := NewClient(accessId, secretKey)
+	message := NewMessage()
+	message.Type = MESSAGE_TYPE_NOTIFICATION
+	message.Title = title
+	message.Content = content
+	message.ExpireTime = expire
+	style := Style{BuilderId: 0, Ring: 1, Vibrate: 1, Clearable: 0, NId: 0}
+	action := ClickAction{}
+	action.ActionType = ACTION_TYPE_ACTIVITY
+	message.SetStyle(style)
+	message.SetAction(action)
+	if custom != nil {
+		message.SetCustom(custom)
+	}
+	message.AddAcceptTime(TimeInterval{0, 0, 23, 59})
+	res := client.PushGroup(devices, message)
+	return res
+
+}
+
+func (c *Client) PushGroup(devices []string, message *Message) Response {
+	params := make(map[string]interface{})
+	params["access_id"] = c.accessId
+	params["expire_time"] = message.ExpireTime
+	params["send_time"] = message.SendTime
+	params["multi_pkg"] = message.MultiPkg
+	params["message_type"] = message.Type
+	params["message"] = string(message.Json())
+	params["timestamp"] = time.Now().Unix()
+	params["environment"] = 0
+	params["sign"] = c.generateSign(METHOD_POST, RESTAPI_CREATEMULTIPUSH, c.secretKey, params)
+
+	res := c.send(RESTAPI_CREATEMULTIPUSH, params)
+
+	params1 := make(map[string]interface{})
+	params["device_list"], _ = json.Marshal(devices)
+	//params["push_id"] =
+
+}
+
 func PushAllDevices(accessId int, secretKey, title, content string, custom map[string]string, expire int) Response {
 	client := NewClient(accessId, secretKey)
 	message := NewMessage()
