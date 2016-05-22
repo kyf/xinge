@@ -82,12 +82,13 @@ type Message struct {
 }
 
 type Response struct {
-	Code int    `json:"ret_code"`
-	Msg  string `json:"err_msg"`
+	Code   int         `json:"ret_code"`
+	Msg    string      `json:"err_msg"`
+	Result interface{} `json:"result,omitempty"`
 }
 
 func newResponse() Response {
-	return Response{-1, "message not valid"}
+	return Response{-1, "message not valid", nil}
 }
 
 type TagTokenPair struct {

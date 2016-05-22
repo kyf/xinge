@@ -101,11 +101,25 @@ func (c *Client) PushGroup(devices []string, message *Message) Response {
 	params["sign"] = c.generateSign(METHOD_POST, RESTAPI_CREATEMULTIPUSH, c.secretKey, params)
 
 	res := c.send(RESTAPI_CREATEMULTIPUSH, params)
-
+	var pushid string
+	if result, ok := res.Result.(map[string]interface{}); ok {
+		if _pushid, ok := result["push_id"].(string); ok {
+			pushid = _pushid
+		}
+	}
 	params1 := make(map[string]interface{})
-	params["device_list"], _ = json.Marshal(devices)
-	//params["push_id"] =
+	params1["access_id"] = c.accessId
+	params1["timestamp"] = time.Now().Unix()
+	device_list, err := json.Marshal(devices)
+	if err != nil {
+		//panic(err)
+	}
+	params1["device_list"] = string(device_list)
+	params1["push_id"] = pushid
+	params1["sign"] = c.generateSign(METHOD_POST, RESTAPI_PUSHDEVICELISTMULTIPLE, c.secretKey, params1)
+	res = c.send(RESTAPI_PUSHDEVICELISTMULTIPLE, params1)
 
+	return res
 }
 
 func PushAllDevices(accessId int, secretKey, title, content string, custom map[string]string, expire int) Response {
@@ -154,13 +168,16 @@ func (c *Client) send(uri string, params map[string]interface{}) Response {
 	d := strings.Join(data, "&")
 	r, err := http.Post(uri, "application/x-www-form-urlencoded", strings.NewReader(d))
 	if err != nil {
-		panic(err)
+		//panic(err)
 	}
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		panic(err)
+		//panic(err)
 	}
-	json.Unmarshal(body, &res)
+	err = json.Unmarshal(body, &res)
+	if err != nil {
+		//panic(err)
+	}
 	return res
 }
 
