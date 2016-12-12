@@ -31,7 +31,6 @@ func TestStaticPushSingleDevice(t *testing.T) {
 }
 
 /*
- */
 func TestStaticPushAllDevices(t *testing.T) {
 	custom := map[string]string{"loadurl": "http://www.6renyou.com/"}
 	res := PushAllDevices(accessId, secretKey, "6人游提醒您", "全量推送", custom, 86400)
@@ -51,3 +50,4 @@ func TestStaticPushGroup(t *testing.T) {
 		fmt.Println("send success")
 	}
 }
+*/

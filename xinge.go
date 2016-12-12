@@ -168,15 +168,19 @@ func (c *Client) send(uri string, params map[string]interface{}) Response {
 	d := strings.Join(data, "&")
 	r, err := http.Post(uri, "application/x-www-form-urlencoded", strings.NewReader(d))
 	if err != nil {
-		//panic(err)
+		res.Msg = fmt.Sprintf("http: %v", err)
+		return res
 	}
+	defer r.Body.Close()
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		//panic(err)
+		res.Msg = fmt.Sprintf("http: %v", err)
+		return res
 	}
 	err = json.Unmarshal(body, &res)
 	if err != nil {
-		//panic(err)
+		res.Msg = fmt.Sprintf("http: %v", err)
+		return res
 	}
 	return res
 }
